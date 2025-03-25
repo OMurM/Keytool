@@ -1,88 +1,72 @@
-from keytool_utils import (
+from components.keys.key_utils import (
     generate_private_key,
-    create_self_signed_certificates,
-    import_certificates,
-    export_certificate,
-    add_private_key_to_keystore,
-    add_certificate_to_keystore,
-    save_keystore,
-    load_keystore,
-    get_from_keystore
+    save_private_key,
 )
 
-def display_menu():
-    print("\nKeytool Menu:")
-    print("1. Generate Private Key")
-    print("2. Create Self-Signed Certificate")
-    print("3. Import Certificate")
-    print("4. Export Certificate")
-    print("5. Save Keystore")
-    print("6. Load Keystore")
-    print("7. Retrieve from Keystore")
-    print("8. Exit")
+from components.certificates.certificate_utils import (
+    create_self_signed_certificates,
+    import_certificates,
+)
+
+from components.certificates.certificate_io import (
+    export_certificate,
+    save_keystore,
+    load_keystore,
+    get_from_keystore,
+)
+
+from components.keystore.keystore_utils import (
+    add_private_key_to_keystore,
+    add_certificate_to_keystore,
+)
 
 def main():
-    private_key = None
-    public_key = None
-    certificate = None
-
+    # Display menu and handle user input for various key and certificate operations
     while True:
-        display_menu()
-        choice = input("Enter your choice: ")
-
-        if choice == "1":
-            alias = input("Enter an alias for the private key: ")
+        print("Keytool Menu:")
+        print("1. Generate Private Key")
+        print("2. Create Self-Signed Certificate")
+        print("3. Add Private Key to Keystore")
+        print("4. Add Certificate to Keystore")
+        print("5. Save Keystore")
+        print("6. Load Keystore")
+        print("7. Exit")
+        
+        choice = input("Select an option: ")
+        
+        if choice == '1':
             private_key, public_key = generate_private_key()
+            print("Private key generated.")
+        
+        elif choice == '2':
+            common_name = input("Enter common name: ")
+            certificate = create_self_signed_certificates(private_key, public_key, common_name)
+            print("Self-signed certificate created.")
+        
+        elif choice == '3':
+            alias = input("Enter alias for private key: ")
             add_private_key_to_keystore(alias, private_key)
-            print(f"Private key generated and added to keystore with alias '{alias}'.")
-        elif choice == "2":
-            if private_key is None or public_key is None:
-                print("Please generate a private key first.")
-            else:
-                alias = input("Enter an alias for the certificate: ")
-                common_name = input("Enter the Common Name (e.g., myorganization.com): ")
-                certificate = create_self_signed_certificates(private_key, public_key, common_name)
-                add_certificate_to_keystore(alias, certificate)
-                print(f"Self-signed certificate created and added to keystore with alias '{alias}'.")
-        elif choice == "3":
-            filename = input("Enter the filename of the certificate to import: ")
-            try:
-                certificate = import_certificates(filename)
-                alias = input("Enter an alias for the imported certificate: ")
-                add_certificate_to_keystore(alias, certificate)
-                print(f"Certificate imported and added to keystore with alias '{alias}'.")
-            except Exception as e:
-                print(f"Failed to import certificate: {e}")
-        elif choice == "4":
-            alias = input("Enter the alias of the certificate to export: ")
-            try:
-                item = get_from_keystore(alias)
-                if item["type"] == "certificate":
-                    filename = input("Enter the filename to export the certificate to: ")
-                    export_certificate(item["certificate"], filename)
-                    print(f"Certificate exported successfully to '{filename}'.")
-                else:
-                    print("The alias does not refer to a certificate.")
-            except KeyError as e:
-                print(e)
-        elif choice == "5":
-            filename = input("Enter the filename to save the keystore: ")
+            print("Private key added to keystore.")
+        
+        elif choice == '4':
+            alias = input("Enter alias for certificate: ")
+            add_certificate_to_keystore(alias, certificate)
+            print("Certificate added to keystore.")
+        
+        elif choice == '5':
+            filename = input("Enter filename to save keystore: ")
             save_keystore(filename)
-        elif choice == "6":
-            filename = input("Enter the filename to load the keystore: ")
+        
+        elif choice == '6':
+            filename = input("Enter filename to load keystore: ")
             load_keystore(filename)
-        elif choice == "7":
-            alias = input("Enter the alias to retrieve from the keystore: ")
-            try:
-                item = get_from_keystore(alias)
-                print(f"Retrieved item: {item}")
-            except KeyError as e:
-                print(e)
-        elif choice == "8":
+        
+        elif choice == '7':
             print("Exiting...")
             break
+        
         else:
-            print("Invalid choice. Please try again.")
+            print("Invalid option. Please try again.")
 
 if __name__ == "__main__":
     main()
