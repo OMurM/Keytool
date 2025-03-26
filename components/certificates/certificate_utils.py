@@ -1,4 +1,6 @@
 from cryptography import x509
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.x509 import load_pem_x509_certificate
 from cryptography.x509.oid import NameOID
 import datetime
 
@@ -27,6 +29,7 @@ def create_self_signed_certificates(private_key, public_key, common_name, countr
         x509.SubjectAlternativeName([x509.DNSName(common_name)]),
         critical=False,
     ).sign(private_key, hashes.SHA256())
+    
     return certificate
 
 def import_certificates(filename):
@@ -34,3 +37,11 @@ def import_certificates(filename):
         certificate_data = f.read()
         certificate = load_pem_x509_certificate(certificate_data)
     return certificate
+
+def save_certificate(certificate, filename):
+    with open(filename, "wb") as f:
+        f.write(certificate.public_bytes(serialization.Encoding.PEM))
+
+def export_certificate(certificate, filename):
+    with open(filename, "wb") as f:
+        f.write(certificate.public_bytes(serialization.Encoding.PEM))

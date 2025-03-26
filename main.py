@@ -1,27 +1,17 @@
-from components.keys.key_utils import (
-    generate_private_key,
-    save_private_key,
-)
-
-from components.certificates.certificate_utils import (
-    create_self_signed_certificates,
-    import_certificates,
-)
-
-from components.certificates.certificate_io import (
-    export_certificate,
-    save_keystore,
-    load_keystore,
-    get_from_keystore,
-)
-
+from components.keys.key_utils import generate_private_key
+from components.certificates.certificate_utils import create_self_signed_certificates
 from components.keystore.keystore_utils import (
     add_private_key_to_keystore,
     add_certificate_to_keystore,
+    load_keystore,
+    save_keystore,
 )
 
 def main():
-    # Display menu and handle user input for various key and certificate operations
+    private_key = None
+    public_key = None
+    certificate = None
+
     while True:
         print("Keytool Menu:")
         print("1. Generate Private Key")

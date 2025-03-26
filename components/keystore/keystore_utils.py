@@ -1,3 +1,6 @@
+from cryptography.hazmat.primitives import serialization
+import json
+
 keystore = {}
 
 def add_private_key_to_keystore(alias, private_key):

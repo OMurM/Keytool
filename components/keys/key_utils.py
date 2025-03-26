@@ -1,4 +1,5 @@
 from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives import serialization
 
 def generate_private_key():
     private_key = rsa.generate_private_key(
